@@ -1,0 +1,58 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Databases
+backend/db.sqlite3
+*.sqlite3
+
+# Python Virtual Environments
+venv/
+backend/venv/
+env/
+ENV/
+
+# Python Cache & Builds
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Node/Frontend Builds & Dependencies
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+.vite/
+.eslintcache
+
+# OS Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Log Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE Configurations
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
