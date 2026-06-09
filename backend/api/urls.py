@@ -5,5 +5,7 @@ urlpatterns = [
     path('health/', views.health_check),
     path('scan/', views.scan_url),
     path('scans/', views.scan_list),
-    path('scans/<int:scan_id>/', views.scan_detail),    
+    path('scans/<int:scan_id>/', views.scan_detail), 
+    path('dashboard/', views.dashboard_stats),
+    path('feedback/', views.submit_feedback),   
 ]

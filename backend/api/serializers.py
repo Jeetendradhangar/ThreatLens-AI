@@ -32,3 +32,7 @@ class ScanListSerializer(serializers.ModelSerializer):
         fields = ['id', 'input_value', 'risk_score', 'threat_level', 'confidence', 'scanned_at']
 
 
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = ['id', 'scan', 'user_rating', 'comment', 'created_at']

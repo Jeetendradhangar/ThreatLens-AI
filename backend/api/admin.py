@@ -18,3 +18,9 @@ class ThreatApiResultAdmin(admin.ModelAdmin):
     list_filter = ['provider', 'status']
     search_fields = ['scan__input_value']
 
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ['id', 'scan', 'user_rating', 'created_at']
+    list_filter = ['user_rating']
+    search_fields = ['scan__input_value', 'comment']
+

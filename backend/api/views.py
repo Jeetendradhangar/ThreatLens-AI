@@ -113,4 +113,43 @@ def scan_detail(request, scan_id):
     serializer = ScanSerializer(scan)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def dashboard_stats(request):
+    total = Scan.objects.count()
+    safe = Scan.objects.filter(threat_level="Safe").count()
+    suspicious = Scan.objects.filter(threat_level="Suspicious").count()
+    dangerous = Scan.objects.filter(threat_level="Dangerous").count()
+    recent = Scan.objects.order_by('-scanned_at')[:10]
+    recent_serialized = ScanListSerializer(recent, many=True).data
+
+    return Response({
+        "total_scans": total,
+        "safe_count": safe,
+        "suspicious_count": suspicious,
+        "dangerous_count": dangerous,
+        "recent_scans": recent_serialized
+    })
+
+
+@api_view(['POST'])
+def submit_feedback(request):
+    scan_id = request.data.get("scan_id")
+    user_rating = request.data.get("user_rating", "").strip()
+    comment = request.data.get("comment", "")
+    valid_ratings = ["helpful", "not_helpful", "false_positive", "false_negative"]
+
+    if not scan_id:
+        return Response({"error": "scan_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+    if user_rating not in valid_ratings:
+        return Response({"error": f"user_rating must be one of: {valid_ratings}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        scan = Scan.objects.get(id=scan_id)
+    except Scan.DoesNotExist:
+        return Response({"error": f"Scan with id {scan_id} not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    feedback = Feedback.objects.create(scan=scan, user_rating=user_rating, comment=comment)
+    serializer = FeedbackSerializer(feedback)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 

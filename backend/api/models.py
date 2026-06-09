@@ -74,5 +74,24 @@ class ThreatApiResult(models.Model):
 
     def __str__(self):
         return f"{self.provider}: {self.status}"
+    
+    class Feedback(models.Model):
+    USER_RATING_CHOICES = [
+        ("helpful", "helpful"),
+        ("not_helpful", "not_helpful"),
+        ("false_positive", "false_positive"),
+        ("false_negative", "false_negative"),
+    ]
+
+    id = models.BigAutoField(primary_key=True)
+    scan = models.ForeignKey(Scan, on_delete=models.CASCADE, related_name='feedbacks')
+    user_rating = models.CharField(max_length=20, choices=USER_RATING_CHOICES)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"Feedback on scan {self.scan_id}: {self.user_rating}"
 
 
