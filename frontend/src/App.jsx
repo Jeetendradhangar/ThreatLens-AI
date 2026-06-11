@@ -8,9 +8,9 @@ import ReportPage from './pages/ReportPage'
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-surface text-on-surface antialiased selection:bg-primary/30 cyber-grid">
         <Navbar />
-        <main className="max-w-5xl mx-auto px-4 py-8">
+        <main className="max-w-[1440px] mx-auto px-6 pt-28 pb-20">
           <Routes>
             <Route path="/" element={<Navigate to="/scan" replace />} />
             <Route path="/scan" element={<ScannerPage />} />

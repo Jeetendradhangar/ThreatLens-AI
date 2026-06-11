@@ -56,3 +56,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Stitch AI Hackathon folder
+stitch_threatlens_ai_dashboard/

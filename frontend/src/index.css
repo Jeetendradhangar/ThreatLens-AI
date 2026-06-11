@@ -1,3 +1,123 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #050816;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(47, 217, 244, 0.05) 0%, transparent 50%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 32px 32px, 32px 32px;
+    background-attachment: fixed;
+    color: #dde4e5;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom Cyberglass UI Utilities */
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(1000%); opacity: 0; }
+}
+
+.cyber-scanner-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #2fd9f4, transparent);
+  animation: scan 3s linear infinite;
+}
+
+.cyber-grid {
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(47, 217, 244, 0.04) 0%, transparent 60%),
+    linear-gradient(to right, rgba(47, 217, 244, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(47, 217, 244, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  background-attachment: fixed;
+}
+
+.glass-panel {
+  backdrop-filter: blur(12px);
+  background: rgba(14, 20, 22, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  backdrop-filter: blur(12px);
+  background: rgba(14, 20, 22, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(47, 217, 244, 0.4);
+  box-shadow: 0 0 20px rgba(47, 217, 244, 0.1);
+}
+
+.glow-primary {
+  box-shadow: 0 0 15px rgba(47, 217, 244, 0.2);
+}
+
+.neon-glow {
+  box-shadow: 0 0 15px rgba(47, 217, 244, 0.3);
+}
+
+.neon-glow-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neon-glow-hover:hover {
+  box-shadow: 0 0 20px rgba(47, 217, 244, 0.5);
+  border-color: rgba(47, 217, 244, 0.4);
+}
+
+.cyber-glow {
+  text-shadow: 0 0 10px rgba(47, 217, 244, 0.5);
+}
+
+.cyber-row:hover {
+  background: rgba(47, 217, 244, 0.05);
+  backdrop-filter: blur(4px);
+}
+
+.glow-cyan:hover {
+  box-shadow: 0 0 15px rgba(47, 217, 244, 0.4);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Scrollbar styling for a high-tech terminal vibe */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050816;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(47, 217, 244, 0.25);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(47, 217, 244, 0.5);
+}

@@ -10,11 +10,11 @@ def calculate_risk(signals: list) -> dict:
     else:
         threat_level = "Dangerous"
 
-    # Priority 7 confidence mappings: Low = no signal, Medium = 1-2 signals, High = 3+ signals
-    signal_count = len(signals)
-    if signal_count >= 3:
+    # Confidence mappings based on actual threat signals (points > 0)
+    threat_signals_count = len([s for s in signals if s.get("points", 0) > 0])
+    if threat_signals_count >= 3:
         confidence = "High"
-    elif signal_count >= 1:
+    elif threat_signals_count >= 1:
         confidence = "Medium"
     else:
         confidence = "Low"

@@ -1,23 +1,23 @@
 import React from 'react'
 
 export default function RiskBadge({ threat_level, confidence }) {
-  let colorClass = 'bg-gray-100 text-gray-800'
+  let badgeStyle = 'bg-[#bbc9cd]/10 text-[#bbc9cd] border border-[#bbc9cd]/25'
 
   if (threat_level === 'Safe') {
-    colorClass = 'bg-green-100 text-green-800 border border-green-200'
+    badgeStyle = 'bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/25 font-semibold'
   } else if (threat_level === 'Suspicious') {
-    colorClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+    badgeStyle = 'bg-[#ffb13b]/15 text-[#ffb13b] border border-[#ffb13b]/25 font-semibold'
   } else if (threat_level === 'Dangerous') {
-    colorClass = 'bg-red-100 text-red-800 border border-red-200 font-semibold'
+    badgeStyle = 'bg-[#ffb4ab]/15 text-[#ffb4ab] border border-[#ffb4ab]/25 font-bold'
   }
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium tracking-wide ${colorClass}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs uppercase tracking-wider ${badgeStyle}`}>
       <span>{threat_level}</span>
       {confidence && (
         <>
-          <span className="mx-1 text-opacity-60">•</span>
-          <span className="text-[10px] uppercase font-bold text-opacity-80">{confidence} confidence</span>
+          <span className="opacity-50">•</span>
+          <span className="text-[10px] font-mono font-medium">{confidence} CONFIDENCE</span>
         </>
       )}
     </span>

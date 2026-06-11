@@ -75,7 +75,7 @@ class ThreatApiResult(models.Model):
     def __str__(self):
         return f"{self.provider}: {self.status}"
     
-    class Feedback(models.Model):
+class Feedback(models.Model):
     USER_RATING_CHOICES = [
         ("helpful", "helpful"),
         ("not_helpful", "not_helpful"),

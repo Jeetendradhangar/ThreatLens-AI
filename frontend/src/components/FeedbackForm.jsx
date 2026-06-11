@@ -9,10 +9,10 @@ export default function FeedbackForm({ scan_id, onSuccess }) {
   const [submitted, setSubmitted] = useState(false)
 
   const ratingOptions = [
-    { label: 'Helpful', value: 'helpful' },
-    { label: 'Not Helpful', value: 'not_helpful' },
-    { label: 'False Positive (was actually safe)', value: 'false_positive' },
-    { label: 'False Negative (missed a threat)', value: 'false_negative' }
+    { label: 'Helpful', value: 'helpful', icon: 'thumb_up' },
+    { label: 'Not Helpful', value: 'not_helpful', icon: 'thumb_down' },
+    { label: 'False Positive', value: 'false_positive', icon: 'verified_user' },
+    { label: 'False Negative', value: 'false_negative', icon: 'bug_report' }
   ]
 
   const handleSubmit = async (e) => {
@@ -41,21 +41,21 @@ export default function FeedbackForm({ scan_id, onSuccess }) {
 
   if (submitted) {
     return (
-      <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg text-center text-sm font-medium">
+      <div className="bg-[#22c55e]/15 border border-[#22c55e]/30 text-[#22c55e] p-4 rounded-xl text-center text-sm font-medium">
         Thank you for your feedback! Your submission helps improve our threat intelligence engine.
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="glass-card p-5 rounded-xl border border-outline-variant/20 flex flex-col gap-4">
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-2">
+        <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-3">
           Was this result helpful?
-        </label>
+        </h3>
         
         {/* Styled Radio Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {ratingOptions.map((opt) => {
             const isSelected = selectedRating === opt.value
             return (
@@ -63,13 +63,14 @@ export default function FeedbackForm({ scan_id, onSuccess }) {
                 key={opt.value}
                 type="button"
                 onClick={() => setSelectedRating(opt.value)}
-                className={`text-left p-3 text-sm rounded-lg border transition-all duration-200 ${
+                className={`flex items-center justify-center gap-2 py-2 px-3 text-xs rounded-lg border transition-all duration-200 ${
                   isSelected
-                    ? 'border-blue-600 bg-blue-50 text-blue-800 font-medium'
-                    : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                    ? 'border-primary bg-primary/10 text-primary font-semibold shadow-[0_0_10px_rgba(47,217,244,0.15)]'
+                    : 'border-outline-variant/20 text-on-surface hover:bg-primary/5 hover:border-primary/30'
                 }`}
               >
-                {opt.label}
+                <span className="material-symbols-outlined text-[14px]">{opt.icon}</span>
+                <span>{opt.label}</span>
               </button>
             )
           })}
@@ -77,7 +78,7 @@ export default function FeedbackForm({ scan_id, onSuccess }) {
       </div>
 
       <div>
-        <label htmlFor="comment" className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+        <label htmlFor="comment" className="block text-xs font-label-caps text-on-surface-variant uppercase tracking-wider mb-2">
           Additional comments (optional)
         </label>
         <textarea
@@ -85,13 +86,13 @@ export default function FeedbackForm({ scan_id, onSuccess }) {
           rows={3}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Let us know what we did right or wrong..."
-          className="w-full text-sm p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          placeholder="Add analyst notes or feedback details..."
+          className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded p-3 text-body-sm focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none h-20 text-on-surface placeholder:text-outline-variant/50"
         />
       </div>
 
       {error && (
-        <div className="text-red-600 text-sm bg-red-50 p-3 rounded border border-red-200">
+        <div className="text-error text-xs bg-error-container/20 p-3 rounded-lg border border-error/30">
           {error}
         </div>
       )}
@@ -99,7 +100,7 @@ export default function FeedbackForm({ scan_id, onSuccess }) {
       <button
         type="submit"
         disabled={!selectedRating || loading}
-        className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+        className="w-full bg-primary-container text-on-primary-container font-label-caps text-label-caps py-2.5 rounded-lg font-bold hover:shadow-[0_0_15px_rgba(47,217,244,0.4)] transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
       >
         {loading ? 'Submitting...' : 'Submit Feedback'}
       </button>

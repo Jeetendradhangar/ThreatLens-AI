@@ -2,58 +2,63 @@ import { NavLink } from 'react-router-dom'
 
 export default function Navbar() {
   const linkClass = ({ isActive }) =>
-    `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
+    `font-body-md text-body-md transition-all duration-300 ease-in-out active:scale-95 pb-1 ${
       isActive
-        ? 'border-blue-600 text-blue-600 font-semibold'
-        : 'border-transparent text-gray-500 hover:text-blue-600 hover:border-gray-300'
+        ? 'border-b-2 border-primary text-primary font-semibold'
+        : 'border-b-2 border-transparent text-on-surface-variant hover:text-primary'
+    }`
+
+  const mobileLinkClass = ({ isActive }) =>
+    `text-xs font-semibold px-2 py-1 rounded transition-colors ${
+      isActive ? 'bg-primary/15 text-primary border border-primary/30' : 'text-on-surface-variant hover:text-primary'
     }`
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center mr-8">
-              <span className="text-2xl mr-2" role="img" aria-label="shield">🛡️</span>
-              <span className="font-bold text-xl text-gray-900 tracking-tight">ThreatLens AI</span>
-            </div>
-            <div className="hidden sm:flex sm:space-x-8">
-              <NavLink to="/scan" className={linkClass}>
-                Scanner
-              </NavLink>
-              <NavLink to="/dashboard" className={linkClass}>
-                Dashboard
-              </NavLink>
-              <NavLink to="/history" className={linkClass}>
-                History
-              </NavLink>
-            </div>
+    <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20 shadow-[0_0_15px_rgba(47,217,244,0.1)]">
+      <div className="flex items-center justify-between px-6 h-16 w-full max-w-[1440px] mx-auto">
+        <div className="flex items-center gap-8">
+          <div className="flex-shrink-0 flex items-center">
+            <span className="material-symbols-outlined text-primary text-[24px] mr-2">radar</span>
+            <span className="font-display-lg text-[20px] lg:text-[24px] font-bold text-primary tracking-tighter">ThreatLens AI</span>
           </div>
-          <div className="flex sm:hidden space-x-4 items-center">
-            <NavLink
-              to="/scan"
-              className={({ isActive }) =>
-                `text-xs font-semibold px-2 py-1 rounded ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600'}`
-              }
-            >
+          <div className="hidden sm:flex gap-6 items-center h-full">
+            <NavLink to="/scan" className={linkClass}>
               Scanner
             </NavLink>
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) =>
-                `text-xs font-semibold px-2 py-1 rounded ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600'}`
-              }
-            >
+            <NavLink to="/dashboard" className={linkClass}>
               Dashboard
             </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                `text-xs font-semibold px-2 py-1 rounded ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600'}`
-              }
-            >
+            <NavLink to="/history" className={linkClass}>
               History
             </NavLink>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center">
+            <span className="text-xs font-semibold text-primary/80 bg-primary/10 border border-primary/20 px-3 py-1 rounded font-mono uppercase tracking-wider">
+              Active Audit Node
+            </span>
+          </div>
+          
+          <div className="flex sm:hidden space-x-2 items-center">
+            <NavLink to="/scan" className={mobileLinkClass}>
+              Scanner
+            </NavLink>
+            <NavLink to="/dashboard" className={mobileLinkClass}>
+              Dashboard
+            </NavLink>
+            <NavLink to="/history" className={mobileLinkClass}>
+              History
+            </NavLink>
+          </div>
+
+          <div className="w-9 h-9 rounded-full overflow-hidden border border-primary/30 shadow-[0_0_8px_rgba(47,217,244,0.3)]">
+            <img
+              alt="Analyst Profile"
+              className="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzoWJjDrzyKrq53Gd85_vbI-YXPXI8Zw0xKasEXPp_F7sn-xnKFS0mLbkeo8gcEZIyjYucsM_21yUynV4rk2rq5oiulQx7x4SWeCJZPqqPv3ywEt82QmrYtmupVRgCJ1DhzyUKMEKf5727MDzVYQL_RMCIbc37b0xDINhJJKyo3pqor-N3FwE0-WYJkxQGWizOty_gbBHnTilTbcNpJYE1JX50n63q-CaiYfmoyjjMthCPxvFva0UGu2PeX-kOlbH0U6-ogBxKTy0"
+            />
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ def check_threat_apis(url: str, domain: str, ip_address: str = None) -> list:
             resp = requests.get(
                 f"https://www.virustotal.com/api/v3/urls/{url_id}",
                 headers={"x-apikey": vt_key},
-                timeout=8
+                timeout=3 # Short timeout to prevent hanging scans
             )
             if resp.status_code == 200:
                 data = resp.json()
@@ -42,7 +42,7 @@ def check_threat_apis(url: str, domain: str, ip_address: str = None) -> list:
         results.append({
             "provider": "VirusTotal",
             "status": "skipped",
-            "raw_summary": "No API key configured. Add VIRUSTOTAL_API_KEY to .env to enable."
+            "raw_summary": "Skipped: API key not configured."
         })
 
     # 2. AbuseIPDB Check (Priority 3)
@@ -60,7 +60,7 @@ def check_threat_apis(url: str, domain: str, ip_address: str = None) -> list:
                     "https://api.abuseipdb.com/api/v2/check",
                     headers={"Key": abuse_key, "Accept": "application/json"},
                     params={"ipAddress": target_ip, "maxAgeInDays": 90},
-                    timeout=8
+                    timeout=3 # Short timeout
                 )
                 if resp.status_code == 200:
                     data = resp.json().get("data", {})
@@ -94,10 +94,10 @@ def check_threat_apis(url: str, domain: str, ip_address: str = None) -> list:
         results.append({
             "provider": "AbuseIPDB",
             "status": "skipped",
-            "raw_summary": "No API key configured. Add ABUSEIPDB_API_KEY to .env to enable."
+            "raw_summary": "Skipped: API key not configured."
         })
 
-    # 3. Google Safe Browsing Check (Priority 6)
+    # 3. Google Safe Browsing Check
     gsb_key = os.environ.get("GOOGLE_SAFE_BROWSING_KEY", "")
     if gsb_key:
         try:
@@ -113,7 +113,7 @@ def check_threat_apis(url: str, domain: str, ip_address: str = None) -> list:
             resp = requests.post(
                 f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={gsb_key}",
                 json=payload,
-                timeout=8
+                timeout=3 # Short timeout
             )
             if resp.status_code == 200:
                 matches = resp.json().get("matches", [])
@@ -140,8 +140,7 @@ def check_threat_apis(url: str, domain: str, ip_address: str = None) -> list:
         results.append({
             "provider": "Google Safe Browsing",
             "status": "skipped",
-            "raw_summary": "No API key configured. Optional service coming soon."
+            "raw_summary": "Skipped: API key not configured."
         })
 
     return results
-

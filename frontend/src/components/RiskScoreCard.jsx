@@ -1,53 +1,91 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import RiskBadge from './RiskBadge'
 
 export default function RiskScoreCard({ risk_score, threat_level, confidence, summary }) {
-  let borderColor = 'border-l-4 border-gray-300'
-  let barColor = 'bg-gray-500'
+  const radius = 68
+  const circumference = 2 * Math.PI * radius // ~427.25
+  const [offset, setOffset] = useState(circumference)
+
+  useEffect(() => {
+    const progress = Math.max(0, Math.min(100, risk_score))
+    const targetOffset = circumference - (progress / 100) * circumference
+    setOffset(targetOffset)
+  }, [risk_score, circumference])
+
+  let color = '#2fd9f4' // Default primary cyan
+  let textColor = 'text-[#2fd9f4]'
+  let label = 'LOW'
 
   if (threat_level === 'Safe') {
-    borderColor = 'border-l-4 border-green-500'
-    barColor = 'bg-green-500'
+    color = '#22c55e'
+    textColor = 'text-[#22c55e]'
+    label = 'SAFE'
   } else if (threat_level === 'Suspicious') {
-    borderColor = 'border-l-4 border-yellow-500'
-    barColor = 'bg-yellow-500'
+    color = '#ffb13b'
+    textColor = 'text-[#ffb13b]'
+    label = 'WARNING'
   } else if (threat_level === 'Dangerous') {
-    borderColor = 'border-l-4 border-red-500'
-    barColor = 'bg-red-500'
+    color = '#ffb4ab'
+    textColor = 'text-[#ffb4ab]'
+    label = 'CRITICAL'
   }
 
-  // Ensure progress bar width is bound between 0 and 100
-  const progressPercent = Math.max(0, Math.min(100, risk_score))
-
   return (
-    <div className={`bg-white p-6 rounded-lg shadow-sm ${borderColor} flex flex-col md:flex-row md:items-center md:justify-between gap-6`}>
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-2">
-          <h3 className="text-lg font-bold text-gray-900">Risk Assessment</h3>
+    <div className="glass-card p-6 rounded-xl border border-[#3c494c]/20 flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-[0_0_20px_rgba(47,217,244,0.08)] transition-all">
+      <div className="flex-1 w-full text-center md:text-left">
+        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
+          <h3 className="text-lg font-bold text-[#dde4e5]">Threat Classification</h3>
           <RiskBadge threat_level={threat_level} confidence={confidence} />
         </div>
-        <p className="text-gray-600 text-sm">{summary}</p>
+        <p className="text-[#bbc9cd] text-sm leading-relaxed mb-4">{summary}</p>
         
-        {/* Progress Bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs text-gray-500 mb-1 font-medium">
-            <span className="text-green-600">Safe (0-30)</span>
-            <span className="text-yellow-600">Suspicious (31-69)</span>
-            <span className="text-red-600">Dangerous (70-100)</span>
+        {/* Visual score range indicators */}
+        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#3c494c]/20 w-full text-[10px] font-mono text-center">
+          <div className="flex flex-col">
+            <span className="text-[#22c55e] font-semibold">Safe</span>
+            <span className="text-[#bbc9cd]/60">0 - 30</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-              style={{ width: `${progressPercent}%` }}
-            ></div>
+          <div className="flex flex-col border-x border-[#3c494c]/20">
+            <span className="text-[#ffb13b] font-semibold">Suspicious</span>
+            <span className="text-[#bbc9cd]/60">31 - 69</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[#ffb4ab] font-semibold">Dangerous</span>
+            <span className="text-[#bbc9cd]/60">70 - 100</span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center bg-gray-50 p-4 rounded-lg min-w-[120px] border border-gray-100">
-        <span className="text-xs text-gray-500 uppercase font-semibold">Risk Score</span>
-        <span className="text-4xl font-extrabold text-gray-950 mt-1">{risk_score}</span>
-        <span className="text-xs text-gray-400 mt-0.5">out of 100</span>
+      <div className="relative w-36 h-36 flex items-center justify-center flex-shrink-0">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+          {/* Background circle */}
+          <circle
+            className="text-[#1a2122]/60"
+            cx="80"
+            cy="80"
+            fill="transparent"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth="6"
+          />
+          {/* Active progress circle */}
+          <circle
+            className="transition-all duration-1000 ease-out"
+            cx="80"
+            cy="80"
+            fill="transparent"
+            r={radius}
+            stroke={color}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            strokeWidth="8"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className={`text-3xl font-extrabold tracking-tighter ${textColor}`}>{risk_score}</span>
+          <span className="text-[9px] font-mono font-semibold text-[#bbc9cd] tracking-wider uppercase">{label}</span>
+        </div>
       </div>
     </div>
   )

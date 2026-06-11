@@ -3,47 +3,67 @@ import React from 'react'
 export default function SignalList({ signals }) {
   if (!signals || signals.length === 0) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
-        <p className="text-gray-500 text-sm">No risk signals detected. This URL appears clean.</p>
+      <div className="glass-card p-8 rounded-xl text-center border border-[#3c494c]/20">
+        <span className="material-symbols-outlined text-[#22c55e] text-3xl mb-2">verified_user</span>
+        <p className="text-[#bbc9cd] text-sm font-medium">No risk signals detected. This target appears clean.</p>
       </div>
     )
   }
 
-  const getSeverityBadgeClass = (severity) => {
+  const getSeverityStyle = (severity) => {
     switch (severity?.toLowerCase()) {
       case 'low':
-        return 'bg-gray-100 text-gray-700'
+        return {
+          badge: 'bg-[#2fd9f4]/10 text-[#2fd9f4] border border-[#2fd9f4]/25',
+          points: 'text-[#2fd9f4]'
+        }
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800'
+        return {
+          badge: 'bg-[#ffb13b]/10 text-[#ffb13b] border border-[#ffb13b]/25',
+          points: 'text-[#ffb13b]'
+        }
       case 'high':
-        return 'bg-orange-100 text-orange-800'
+        return {
+          badge: 'bg-[#ffb4ab]/10 text-[#ffb4ab] border border-[#ffb4ab]/25',
+          points: 'text-[#ffb4ab]'
+        }
       case 'critical':
-        return 'bg-red-100 text-red-800 font-bold'
+        return {
+          badge: 'bg-[#ff5555]/20 text-[#ff5555] border border-[#ff5555]/40 font-bold',
+          points: 'text-[#ff5555]'
+        }
       default:
-        return 'bg-gray-100 text-gray-700'
+        return {
+          badge: 'bg-[#bbc9cd]/10 text-[#bbc9cd] border border-[#bbc9cd]/25',
+          points: 'text-[#bbc9cd]'
+        }
     }
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 divide-y divide-gray-100">
-      {signals.map((sig, idx) => (
-        <div key={idx} className="p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors">
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              <span className="font-semibold text-sm text-gray-900">{sig.signal_name}</span>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wider ${getSeverityBadgeClass(sig.severity)}`}>
-                {sig.severity}
-              </span>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {signals.map((sig, idx) => {
+        const style = getSeverityStyle(sig.severity)
+        return (
+          <div
+            key={idx}
+            className="glass-card p-5 rounded-xl border border-[#3c494c]/20 flex flex-col justify-between hover:shadow-[0_0_15px_rgba(47,217,244,0.05)] transition-all duration-300"
+          >
+            <div className="mb-3">
+              <div className="flex justify-between items-start gap-2 mb-2">
+                <span className={`px-2.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${style.badge}`}>
+                  {sig.severity}
+                </span>
+                <span className={`font-mono text-xs font-semibold ${style.points}`}>
+                  +{sig.points} PTS
+                </span>
+              </div>
+              <h4 className="font-semibold text-sm text-[#dde4e5] mb-1">{sig.signal_name}</h4>
             </div>
-            <p className="text-xs text-gray-500">{sig.explanation}</p>
+            <p className="text-xs text-[#bbc9cd] leading-relaxed">{sig.explanation}</p>
           </div>
-          <div className="flex-shrink-0">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-100">
-              +{sig.points} pts
-            </span>
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

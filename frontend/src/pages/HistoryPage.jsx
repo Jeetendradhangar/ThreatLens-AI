@@ -35,137 +35,199 @@ export default function HistoryPage() {
   const getScoreColor = (level) => {
     switch (level) {
       case 'Safe':
-        return 'text-green-600'
+        return 'text-[#22c55e]'
       case 'Suspicious':
-        return 'text-yellow-600'
+        return 'text-tertiary'
       case 'Dangerous':
-        return 'text-red-600'
+        return 'text-error'
       default:
-        return 'text-gray-600'
+        return 'text-on-surface-variant'
     }
   }
 
-  const getConfidenceBadge = (confidence) => {
-    switch (confidence) {
-      case 'High':
-        return 'bg-blue-100 text-blue-800'
-      case 'Medium':
-        return 'bg-purple-100 text-purple-800'
-      case 'Low':
-        return 'bg-gray-100 text-gray-800'
+  const getScoreBarColor = (level) => {
+    switch (level) {
+      case 'Safe':
+        return 'bg-[#22c55e]'
+      case 'Suspicious':
+        return 'bg-tertiary'
+      case 'Dangerous':
+        return 'bg-error'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-outline'
     }
+  }
+
+  const getThreatIcon = (level) => {
+    switch (level) {
+      case 'Safe':
+        return <span className="material-symbols-outlined text-[#22c55e] text-lg">verified</span>
+      case 'Suspicious':
+        return <span className="material-symbols-outlined text-tertiary text-lg">warning</span>
+      case 'Dangerous':
+        return <span className="material-symbols-outlined text-error text-lg">dangerous</span>
+      default:
+        return <span className="material-symbols-outlined text-outline text-lg">help</span>
+    }
+  }
+
+  // Simple CSV Export function
+  const handleExportCSV = () => {
+    if (filteredScans.length === 0) return
+    const headers = ['ID', 'Input Target', 'Normalized URL', 'Risk Score', 'Threat Level', 'Confidence', 'Scanned At']
+    const rows = filteredScans.map(s => [
+      s.id,
+      s.input_value,
+      s.normalized_url || '',
+      s.risk_score,
+      s.threat_level,
+      s.confidence || 'Medium',
+      s.scanned_at
+    ])
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(','), ...rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))].join('\n')
+      
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `threatlens_audit_export_${Date.now()}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <LoadingSpinner message="Retrieving scan history..." />
+      <div className="glass-panel p-6 rounded-xl border border-outline-variant/20 max-w-4xl mx-auto mt-12">
+        <LoadingSpinner message="Retrieving scan history logs..." />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center space-y-4 shadow-sm">
-        <span className="text-3xl" role="img" aria-label="error">⚠️</span>
-        <p className="text-red-700 font-medium">{error}</p>
+      <div className="max-w-4xl mx-auto mt-12 glass-panel p-8 rounded-xl border border-error/30 text-center flex flex-col items-center gap-4">
+        <span className="material-symbols-outlined text-error text-5xl">warning</span>
+        <p className="text-error font-medium">{error}</p>
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Scan History</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          All URLs scanned by ThreatLens AI.
-        </p>
-      </div>
+      {/* Page Header & Filters */}
+      <header className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-display-lg text-display-lg text-primary">Scan History</h1>
+            <p className="text-on-surface-variant font-body-md">Audit and review all automated intelligence reports.</p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search Input */}
+            <div className="glass-card flex items-center px-3 py-1.5 rounded-lg border border-outline-variant/20">
+              <span className="material-symbols-outlined text-outline-variant mr-2 text-[20px]">search</span>
+              <input
+                type="text"
+                placeholder="Search targets..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-transparent border-none focus:ring-0 text-body-sm text-on-surface focus:outline-none placeholder:text-outline/40 w-44"
+              />
+            </div>
 
-      {/* Filters & Search Toolbar */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
-        {/* Search */}
-        <div className="w-full md:max-w-xs">
-          <label htmlFor="search-logs" className="sr-only">Search scans</label>
-          <input
-            id="search-logs"
-            type="text"
-            placeholder="Search URLs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full text-sm p-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          />
-        </div>
+            {/* Filter Levels dropdown styled exactly like design */}
+            <div className="glass-card flex items-center px-3 py-1.5 rounded-lg gap-2 border border-outline-variant/20">
+              <span className="material-symbols-outlined text-outline text-[20px]">filter_list</span>
+              <select
+                value={filterLevel}
+                onChange={(e) => setFilterLevel(e.target.value)}
+                className="bg-transparent border-none focus:ring-0 text-body-sm font-medium text-on-surface cursor-pointer focus:outline-none"
+              >
+                <option value="All" className="bg-surface text-on-surface">Risk: All Levels</option>
+                <option value="Dangerous" className="bg-surface text-on-surface">Risk: Dangerous</option>
+                <option value="Suspicious" className="bg-surface text-on-surface">Risk: Suspicious</option>
+                <option value="Safe" className="bg-surface text-on-surface">Risk: Safe</option>
+              </select>
+            </div>
 
-        {/* Filter Levels */}
-        <div className="flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end">
-          {['All', 'Safe', 'Suspicious', 'Dangerous'].map((level) => (
             <button
-              key={level}
-              onClick={() => setFilterLevel(level)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wider transition-colors duration-200 ${
-                filterLevel === level
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              onClick={handleExportCSV}
+              disabled={filteredScans.length === 0}
+              className="bg-surface-container-high hover:bg-surface-container-highest px-4 py-2 rounded-lg flex items-center gap-2 border border-outline-variant/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-on-surface"
             >
-              {level}
+              <span className="material-symbols-outlined text-[18px]">download</span>
+              <span className="font-label-caps text-label-caps font-bold">Export CSV</span>
             </button>
-          ))}
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Showing count */}
-      <div className="text-xs text-gray-500 font-medium px-1">
-        Showing {filteredScans.length} of {scans.length} scans
+      {/* Count Indicator */}
+      <div className="text-xs text-on-surface-variant/70 font-label-caps tracking-wider px-1">
+        SHOWING {filteredScans.length} OF {scans.length} AUDIT NODES
       </div>
 
       {/* Main Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+      <div className="glass-card rounded-xl overflow-hidden border border-outline-variant/20">
         {filteredScans.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100 text-xs font-semibold uppercase text-gray-500 tracking-wider">
-                  <th className="p-4">URL / IP Address</th>
-                  <th className="p-4 text-center">Risk Score</th>
-                  <th className="p-4">Threat Level</th>
-                  <th className="p-4 text-center">Confidence</th>
-                  <th className="p-4">Scanned At</th>
-                  <th className="p-4 text-right">Action</th>
+                <tr className="bg-surface-container-low border-b border-outline-variant/30">
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">URL / Domain</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Risk Score</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Threat Level</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Confidence</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Scan Date</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-sm">
+              <tbody className="divide-y divide-outline-variant/10">
                 {filteredScans.map((scan) => (
-                  <tr key={scan.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-4 font-mono text-xs text-gray-800 break-all max-w-xs md:max-w-md">
-                      {scan.input_value.length > 60
-                        ? `${scan.input_value.substring(0, 60)}...`
-                        : scan.input_value}
+                  <tr
+                    key={scan.id}
+                    className="cyber-row transition-colors group"
+                  >
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        {getThreatIcon(scan.threat_level)}
+                        <span className="font-data-mono text-data-mono text-on-surface break-all max-w-xs md:max-w-md block">
+                          {scan.input_value}
+                        </span>
+                      </div>
                     </td>
-                    <td className={`p-4 text-center font-extrabold ${getScoreColor(scan.threat_level)}`}>
-                      {scan.risk_score}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                          <div className={`${getScoreBarColor(scan.threat_level)} h-full`} style={{ width: `${scan.risk_score}%` }}></div>
+                        </div>
+                        <span className={`font-data-mono ${getScoreColor(scan.threat_level)} font-bold`}>
+                          {scan.risk_score}
+                        </span>
+                      </div>
                     </td>
-                    <td className="p-4">
+                    <td className="px-6 py-5">
                       <RiskBadge threat_level={scan.threat_level} />
                     </td>
-                    <td className="p-4 text-center">
-                      <span className={`inline-flex px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${getConfidenceBadge(scan.confidence)}`}>
-                        {scan.confidence || 'Medium'}
+                    <td className="px-6 py-5">
+                      <span className="text-on-surface-variant font-data-mono text-xs">
+                        {scan.threat_level === 'Safe' ? 'Clean Result' : `${scan.confidence || 'Medium'} Confidence`}
                       </span>
                     </td>
-                    <td className="p-4 text-xs text-gray-500 whitespace-nowrap">
-                      {new Date(scan.scanned_at).toLocaleString()}
+                    <td className="px-6 py-5">
+                      <span className="text-on-surface-variant font-data-mono text-xs whitespace-nowrap">
+                        {scan.scanned_at ? new Date(scan.scanned_at).toLocaleString() : 'Unknown Date'}
+                      </span>
                     </td>
-                    <td className="p-4 text-right whitespace-nowrap">
+                    <td className="px-6 py-5 text-right">
                       <Link
                         to={`/report/${scan.id}`}
-                        className="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:border-blue-400 px-3 py-1 rounded bg-blue-50/50 hover:bg-blue-50 transition-all"
+                        className="inline-flex p-2 hover:bg-primary/10 rounded-full transition-colors text-primary"
+                        title="View Full Intel Report"
                       >
-                        View Report
+                        <span className="material-symbols-outlined">visibility</span>
                       </Link>
                     </td>
                   </tr>
@@ -174,8 +236,8 @@ export default function HistoryPage() {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-gray-500 text-sm">
-            No scans found matching your filters.
+          <div className="p-12 text-center text-on-surface-variant/60 text-sm italic">
+            No scans match the active search filters.
           </div>
         )}
       </div>

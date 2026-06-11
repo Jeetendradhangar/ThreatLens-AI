@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.throttling import AnonRateThrottle
 from django.http import JsonResponse
 from rest_framework.views import exception_handler
 from rest_framework.exceptions import Throttled
@@ -36,6 +37,7 @@ def health_check(request):
 
 
 @api_view(['POST'])
+@throttle_classes([AnonRateThrottle])
 def scan_url(request):
     input_value = request.data.get("input_value", "").strip()
     if not input_value:
@@ -43,7 +45,11 @@ def scan_url(request):
     if len(input_value) > 2048:
         return Response({"error": "input_value exceeds maximum length of 2048 characters."}, status=status.HTTP_400_BAD_REQUEST)
 
-    scan_data = extract_url_signals(input_value)
+    try:
+        scan_data = extract_url_signals(input_value)
+    except ValueError as val_err:
+        return Response({"error": str(val_err)}, status=status.HTTP_400_BAD_REQUEST)
+
     risk_data = calculate_risk(scan_data["signals"])
     
     # Priority 3: Pass ip_address to check_threat_apis
@@ -115,6 +121,11 @@ def scan_detail(request, scan_id):
 
 @api_view(['GET'])
 def dashboard_stats(request):
+    import datetime
+    from django.utils import timezone
+    from django.db.models import Count, Max
+    from django.db.models.functions import TruncDate
+
     total = Scan.objects.count()
     safe = Scan.objects.filter(threat_level="Safe").count()
     suspicious = Scan.objects.filter(threat_level="Suspicious").count()
@@ -122,12 +133,39 @@ def dashboard_stats(request):
     recent = Scan.objects.order_by('-scanned_at')[:10]
     recent_serialized = ScanListSerializer(recent, many=True).data
 
+    # Real Risk Trend Calculation (last 30 days)
+    today = timezone.now().date()
+    start_date = today - datetime.timedelta(days=29)
+
+    daily_qs = Scan.objects.filter(scanned_at__date__gte=start_date) \
+                           .annotate(date=TruncDate('scanned_at')) \
+                           .values('date') \
+                           .annotate(count=Count('id'), max_risk=Max('risk_score'))
+
+    daily_map = {
+        item['date']: {
+            "count": item['count'],
+            "max_risk": item['max_risk'] or 0
+        } for item in daily_qs if item['date']
+    }
+
+    trend_data = []
+    for i in range(30):
+        d = start_date + datetime.timedelta(days=i)
+        day_stats = daily_map.get(d, {"count": 0, "max_risk": 0})
+        trend_data.append({
+            "date": d.isoformat(),
+            "count": day_stats["count"],
+            "max_risk": day_stats["max_risk"]
+        })
+
     return Response({
         "total_scans": total,
         "safe_count": safe,
         "suspicious_count": suspicious,
         "dangerous_count": dangerous,
-        "recent_scans": recent_serialized
+        "recent_scans": recent_serialized,
+        "trend_data": trend_data
     })
 
 

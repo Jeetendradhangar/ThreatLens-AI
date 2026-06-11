@@ -14,7 +14,7 @@ export default function ScannerPage() {
   const [feedbackSuccess, setFeedbackSuccess] = useState(false)
 
   const handleScan = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     if (!inputValue.trim()) return
 
     setResult(null)
@@ -44,144 +44,229 @@ export default function ScannerPage() {
   const getRecommendationStyle = (threatLevel) => {
     switch (threatLevel) {
       case 'Safe':
-        return 'border-l-4 border-green-500 bg-green-50 text-green-800'
+        return 'border-l-4 border-[#22c55e] bg-[#22c55e]/10 text-[#dde4e5]'
       case 'Suspicious':
-        return 'border-l-4 border-yellow-500 bg-yellow-50 text-yellow-800'
+        return 'border-l-4 border-tertiary bg-tertiary/10 text-[#dde4e5]'
       case 'Dangerous':
-        return 'border-l-4 border-red-500 bg-red-50 text-red-800'
+        return 'border-l-4 border-error bg-error-container/20 text-[#dde4e5]'
       default:
-        return 'border-l-4 border-gray-500 bg-gray-50 text-gray-800'
+        return 'border-l-4 border-outline bg-surface-container text-[#dde4e5]'
     }
   }
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
+    <div className="space-y-8">
+      {/* Hero Section */}
+      <section className="max-w-[1000px] mx-auto text-center mb-16">
+        <h1 className="font-display-lg text-display-lg mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-container">
           Scan Before You Click
         </h1>
-        <p className="mt-3 text-lg text-gray-500">
-          Enter any URL, domain, or IP address to get an instant risk assessment.
+        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+          Real-time URL and IP intelligence to protect your digital footprint from malicious exploits and phishing attempts.
         </p>
-      </div>
+      </section>
 
-      {/* Input Section */}
-      {!loading && !result && !error && (
-        <form onSubmit={handleScan} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 space-y-4">
-          <div>
-            <label htmlFor="scan-input" className="sr-only">URL or IP address</label>
-            <input
-              id="scan-input"
-              type="text"
-              required
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="https://example.com or 192.168.1.1 or domain.com"
-              className="w-full text-lg p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={!inputValue.trim()}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow"
-          >
-            Scan Now
-          </button>
-        </form>
-      )}
-
-      {/* Loading */}
-      {loading && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <LoadingSpinner message="Scanning URL... This may take a few seconds." />
+      {/* Centerpiece Scanner Input / Loader / Error */}
+      <section className="max-w-4xl mx-auto relative">
+        {/* Animated Pulse Background */}
+        <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-hidden">
+          <div className="w-96 h-96 bg-primary/5 rounded-full animate-pulse-ring"></div>
+          <div className="w-[500px] h-[500px] bg-primary/5 rounded-full animate-pulse-ring" style={{ animationDelay: '1s' }}></div>
         </div>
-      )}
 
-      {/* Error */}
-      {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center space-y-4 shadow-sm">
-          <span className="text-3xl" role="img" aria-label="error">⚠️</span>
-          <p className="text-red-700 font-medium">{error}</p>
-          <div>
-            <button
-              onClick={() => setError('')}
-              className="text-blue-600 hover:text-blue-800 font-semibold text-sm underline"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      )}
+        <div className="glass-panel rounded-xl p-8 lg:p-12 relative overflow-hidden">
+          {/* Inner Glow Line */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+          
+          {loading && (
+            <LoadingSpinner message="Running subsurface intelligence scan..." />
+          )}
 
-      {/* Result Output */}
-      {result && !loading && (
-        <div className="space-y-6">
-          {/* Summary / Assessment Card */}
-          <RiskScoreCard
-            risk_score={result.risk_score}
-            threat_level={result.threat_level}
-            confidence={result.confidence}
-            summary={result.summary}
-          />
+          {error && (
+            <div className="flex flex-col items-center gap-4 py-8 text-center">
+              <span className="material-symbols-outlined text-error text-5xl">warning</span>
+              <p className="text-error font-medium font-body-md">{error}</p>
+              <button
+                onClick={() => setError('')}
+                className="text-primary hover:underline font-label-caps text-label-caps"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
 
-          {/* Recommendation Box */}
-          <div className={`p-4 rounded-lg shadow-xs ${getRecommendationStyle(result.threat_level)}`}>
-            <p className="text-sm">
-              <strong className="font-bold mr-1">Recommendation:</strong>
-              {result.recommendation}
-            </p>
-          </div>
-
-          {/* Meta Details */}
-          <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-xs text-xs space-y-1 text-gray-500">
-            <p className="break-all"><strong className="text-gray-700">Scanned Value:</strong> {result.input_value}</p>
-            {result.normalized_url && <p className="break-all"><strong className="text-gray-700">Normalized:</strong> {result.normalized_url}</p>}
-            {result.domain && <p><strong className="text-gray-700">Domain:</strong> {result.domain}</p>}
-            {result.ip_address && <p><strong className="text-gray-700">IP:</strong> {result.ip_address}</p>}
-          </div>
-
-          {/* Signals panel */}
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-3">Risk Signals Detected</h3>
-            <SignalList signals={result.signals} />
-          </div>
-
-          {/* External Reputation Checks */}
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-3">External Reputation Checks</h3>
-            <ApiResultsList api_results={result.api_results} />
-          </div>
-
-          {/* Feedback Section */}
-          <div>
-            {feedbackSuccess ? (
-              <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg text-center text-sm font-medium">
-                Thank you for your feedback!
+          {!loading && !error && !result && (
+            <form onSubmit={handleScan} className="flex flex-col gap-8">
+              <div className="flex flex-col gap-4 relative">
+                <label className="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2" htmlFor="scanner-input">
+                  <span className="material-symbols-outlined text-[16px]">radar</span>
+                  INPUT TARGET FOR ANALYSIS
+                </label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <span className="material-symbols-outlined text-primary/50 group-focus-within:text-primary transition-colors">link</span>
+                  </div>
+                  <input
+                    className="w-full bg-black/40 border border-outline-variant/30 rounded-lg py-5 pl-12 pr-4 text-body-md font-data-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline/50 text-on-surface"
+                    id="scanner-input"
+                    placeholder="Paste suspicious URL or IP address..."
+                    type="text"
+                    required
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!inputValue.trim()}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-primary text-on-primary-fixed px-6 py-2.5 rounded font-label-caps text-label-caps font-bold neon-glow-hover transition-all duration-300 active:scale-95 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">security</span>
+                    Scan Threat
+                  </button>
+                </div>
               </div>
-            ) : (
-              <FeedbackForm
-                scan_id={result.id}
-                onSuccess={() => setFeedbackSuccess(true)}
+
+              {/* Feature Chips */}
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-[16px] text-emerald-400" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                  <span className="font-label-caps text-label-caps text-on-surface">HTTPS Check</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-[16px] text-primary">search</span>
+                  <span className="font-label-caps text-label-caps text-on-surface">Phishing Keywords</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-[16px] text-primary">alt_route</span>
+                  <span className="font-label-caps text-label-caps text-on-surface">Redirect Analysis</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-[16px] text-primary">public</span>
+                  <span className="font-label-caps text-label-caps text-on-surface">IP Reputation</span>
+                </div>
+              </div>
+
+              {/* Disclaimer */}
+              <div className="mt-4 flex items-start gap-2 text-on-surface-variant/60">
+                <span className="material-symbols-outlined text-[14px]">info</span>
+                <p className="font-body-sm text-body-sm italic">Risk assessment only, not a 100% guarantee.</p>
+              </div>
+            </form>
+          )}
+
+          {/* Results Details Block */}
+          {result && !loading && !error && (
+            <div className="flex flex-col gap-8">
+              <div className="flex justify-between items-center border-b border-outline-variant/20 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="font-label-caps text-label-caps text-primary tracking-widest uppercase">Intelligence Report</span>
+                  <span className="h-1 w-1 bg-outline-variant rounded-full"></span>
+                  <span className="font-data-mono text-data-mono text-on-surface-variant">ID: TL-{result.id}</span>
+                </div>
+                <button
+                  onClick={handleReset}
+                  className="font-label-caps text-label-caps text-primary hover:underline flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">refresh</span> New Scan
+                </button>
+              </div>
+
+              {/* Summary / Assessment Card */}
+              <RiskScoreCard
+                risk_score={result.risk_score}
+                threat_level={result.threat_level}
+                confidence={result.confidence}
+                summary={result.summary}
               />
-            )}
-          </div>
 
-          {/* Disclaimer (Priority 7) */}
-          <div className="bg-gray-50 border border-gray-200 text-gray-500 p-4 rounded-lg text-center text-xs">
-            <span className="font-semibold text-gray-700 block mb-1">⚠️ Disclaimer</span>
-            ThreatLens AI provides risk assessment, not a 100% guarantee. Always exercise caution before interacting with unfamiliar URLs.
-          </div>
+              {/* Recommendation Box */}
+              <div className={`p-4 rounded-xl border border-outline-variant/10 ${getRecommendationStyle(result.threat_level)}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="material-symbols-outlined">warning</span>
+                  <h4 className="font-headline-sm text-sm font-bold uppercase tracking-wider">Recommendation</h4>
+                </div>
+                <p className="text-sm leading-relaxed">{result.recommendation}</p>
+              </div>
 
-          {/* Scan Another Button */}
-          <button
-            onClick={handleReset}
-            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-sm"
-          >
-            Scan Another URL
-          </button>
+              {/* Meta Details */}
+              <div className="bg-surface-container/50 p-4 rounded-xl border border-outline-variant/10 text-xs space-y-2 text-on-surface-variant">
+                <p className="break-all font-data-mono"><strong className="text-on-surface">Scanned Target:</strong> {result.input_value}</p>
+                {result.normalized_url && <p className="break-all font-data-mono"><strong className="text-on-surface">Normalized URL:</strong> {result.normalized_url}</p>}
+                {result.domain && <p className="font-data-mono"><strong className="text-on-surface">Registered Domain:</strong> {result.domain}</p>}
+                {result.ip_address && <p className="font-data-mono"><strong className="text-on-surface">Resolved IP:</strong> {result.ip_address}</p>}
+              </div>
+
+              {/* Signals Panel */}
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-headline-sm text-sm font-bold text-on-surface uppercase tracking-wider">Risk Signals Detected</h3>
+                  <span className="font-data-mono text-xs text-on-surface-variant">{result.signals?.length || 0} Flagged</span>
+                </div>
+                <SignalList signals={result.signals} />
+              </div>
+
+              {/* External Reputation Checks */}
+              <div>
+                <h3 className="font-headline-sm text-sm font-bold text-on-surface uppercase tracking-wider mb-3">External Reputation Checks</h3>
+                <ApiResultsList api_results={result.api_results} />
+              </div>
+
+              {/* Feedback Section */}
+              <div>
+                {feedbackSuccess ? (
+                  <div className="bg-[#22c55e]/15 border border-[#22c55e]/30 text-[#22c55e] p-4 rounded-xl text-center text-sm font-medium">
+                    Thank you for your feedback!
+                  </div>
+                ) : (
+                  <FeedbackForm
+                    scan_id={result.id}
+                    onSuccess={() => setFeedbackSuccess(true)}
+                  />
+                )}
+              </div>
+
+              {/* Disclaimer */}
+              <div className="bg-surface-container-low/40 border border-outline-variant/10 text-on-surface-variant/60 p-4 rounded-xl text-center text-xs">
+                <span className="font-semibold text-on-surface block mb-1">⚠️ Disclaimer</span>
+                ThreatLens AI provides risk assessment and educational threat signals. It is not a 100% guarantee that a URL is safe or malicious. Always use precautions.
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Bento Grid - Decorative Elements below Centerpiece */}
+        {!result && (
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+            <div className="glass-panel p-6 rounded-lg flex flex-col gap-2">
+              <span className="font-label-caps text-label-caps text-on-surface-variant">RECENT SCAN LOAD</span>
+              <div className="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+                <div className="w-3/4 h-full bg-primary animate-pulse"></div>
+              </div>
+              <span className="font-data-mono text-body-sm text-primary">82.4% CPU CAPACITY</span>
+            </div>
+            <div className="glass-panel p-6 rounded-lg flex flex-col gap-2 md:col-span-2">
+              <span className="font-label-caps text-label-caps text-on-surface-variant">GLOBAL THREAT MAP (ACTIVE)</span>
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full border border-surface-container-highest bg-error animate-pulse"></div>
+                  <div className="w-8 h-8 rounded-full border border-surface-container-highest bg-primary animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                </div>
+                <span className="font-data-mono text-body-sm text-on-surface">Tracking 4,129 malicious entities...</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Decorative UI Element (Floating Intelligence Data) */}
+      <div className="hidden lg:block fixed left-10 bottom-32 opacity-20 hover:opacity-100 transition-opacity duration-500">
+        <div className="flex flex-col gap-2 font-data-mono text-body-sm">
+          <div className="text-primary">&gt; RUNNING_SUBSURFACE_SCAN</div>
+          <div className="text-on-surface-variant">ID: 4920-TLX</div>
+          <div className="text-on-surface-variant">PORT: 443 OPEN</div>
+          <div className="text-on-surface-variant">TTL: 54ms</div>
+        </div>
+      </div>
     </div>
   )
 }

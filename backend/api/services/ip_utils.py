@@ -5,10 +5,12 @@ def is_valid_ip(ip_str: str) -> bool:
     """
     Checks if a string is a valid IPv4 or IPv6 address.
     """
+    if not isinstance(ip_str, str):
+        return False
     try:
-        ipaddress.ip_address(ip_str)
+        ipaddress.ip_address(ip_str.strip())
         return True
-    except ValueError:
+    except Exception:
         return False
 
 def resolve_hostname(hostname: str) -> str:
@@ -16,11 +18,12 @@ def resolve_hostname(hostname: str) -> str:
     Safely resolves a hostname to an IP address.
     Returns None if resolution fails or times out.
     """
-    if not hostname:
+    if not hostname or not isinstance(hostname, str):
         return None
     try:
+        clean_host = hostname.strip().strip("[]")
         socket.setdefaulttimeout(3.0)
-        addr_info = socket.getaddrinfo(hostname, None)
+        addr_info = socket.getaddrinfo(clean_host, None)
         if addr_info:
             # Retrieve the first resolved address
             return addr_info[0][4][0]

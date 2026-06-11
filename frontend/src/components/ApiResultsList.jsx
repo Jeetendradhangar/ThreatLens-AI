@@ -5,38 +5,65 @@ export default function ApiResultsList({ api_results }) {
     return null
   }
 
-  const getStatusBadge = (status) => {
+  const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'clean':
-        return 'bg-green-100 text-green-800 border border-green-200'
+        return {
+          text: 'text-[#22c55e]',
+          badge: 'bg-[#22c55e]/10 text-[#22c55e] border-emerald-500/20'
+        }
       case 'malicious':
-        return 'bg-red-100 text-red-800 border border-red-200 font-semibold'
+        return {
+          text: 'text-error',
+          badge: 'bg-error-container/20 text-error border-error/20 font-bold'
+        }
       case 'suspicious':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+        return {
+          text: 'text-tertiary',
+          badge: 'bg-tertiary/10 text-tertiary border-tertiary/20'
+        }
       case 'error':
-        return 'bg-red-100 text-red-800 border border-red-200'
+        return {
+          text: 'text-error/80',
+          badge: 'bg-error-container/10 text-error/80 border-error/10'
+        }
       case 'skipped':
-        return 'bg-gray-100 text-gray-600 border border-gray-200'
+        return {
+          text: 'text-on-surface-variant/70',
+          badge: 'bg-surface-container-high/40 text-on-surface-variant/70 border-outline-variant/10'
+        }
       default:
-        return 'bg-gray-100 text-gray-800'
+        return {
+          text: 'text-on-surface',
+          badge: 'bg-surface-container/40 text-on-surface border-outline-variant/10'
+        }
     }
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 divide-y divide-gray-100 overflow-hidden">
-      {api_results.map((res, idx) => (
-        <div key={idx} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-gray-50 transition-colors">
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-sm text-gray-950">{res.provider}</span>
-            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wider ${getStatusBadge(res.status)}`}>
-              {res.status}
-            </span>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {api_results.map((res, idx) => {
+        const style = getStatusStyle(res.status)
+        return (
+          <div key={idx} className="bg-surface-container p-4 rounded-xl border border-outline-variant/20 flex flex-col justify-between hover:border-primary/45 hover:shadow-[0_0_15px_rgba(47,217,244,0.08)] transition-all">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm text-on-surface-variant">dns</span>
+                <span className="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase">{res.provider}</span>
+              </div>
+              <span className={`inline-flex px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border ${style.badge}`}>
+                {res.status}
+              </span>
+            </div>
+            <div className={`text-headline-sm font-bold ${style.text} mt-2 mb-1`}>
+              {res.status?.toUpperCase()}
+            </div>
+            <div className="text-xs text-on-surface-variant/85 italic break-words mt-1" title={res.raw_summary}>
+              {res.raw_summary || 'No detailed summary provided.'}
+            </div>
           </div>
-          <div className="text-xs text-gray-500 italic max-w-md break-all">
-            {res.raw_summary}
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
