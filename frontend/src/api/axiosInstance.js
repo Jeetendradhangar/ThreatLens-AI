@@ -1,7 +1,10 @@
 import axios from 'axios'
 
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-const API_BASE_URL = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
+
+if (!API_BASE_URL) {
+  throw new Error("Configuration Error: VITE_API_BASE_URL environment variable is missing.");
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
