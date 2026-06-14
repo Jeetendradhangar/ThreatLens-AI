@@ -207,7 +207,7 @@ export default function ReportPage() {
         {/* Sidebar */}
         <aside className="lg:col-span-4 flex flex-col gap-stack-lg">
           {/* Risk Score Circle */}
-          <section className="glass-card p-stack-lg rounded-xl flex flex-col items-center text-center">
+          <section className="glass-card p-5 sm:p-8 rounded-xl flex flex-col items-center text-center">
             <h2 className="font-headline-sm text-headline-sm mb-4">Total Risk Score</h2>
             <div className="relative w-48 h-48 mb-4">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 192 192">
@@ -294,7 +294,7 @@ export default function ReportPage() {
         {/* Content Area */}
         <div className="lg:col-span-8 flex flex-col gap-stack-lg">
           {/* Target Technical Details */}
-          <section className="glass-card p-6 rounded-xl border border-outline-variant/20">
+          <section className="glass-card p-4 sm:p-6 rounded-xl border border-outline-variant/20">
             <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-4 tracking-wider">Target Domain Metrics</h3>
             <div className="space-y-4">
               <div>
@@ -330,7 +330,7 @@ export default function ReportPage() {
           </section>
 
           {/* Score Breakdown (Gauges) */}
-          <section className="glass-card p-stack-lg rounded-xl">
+          <section className="glass-card p-5 sm:p-8 rounded-xl">
             <h2 className="font-headline-md text-headline-sm mb-6">Score Category Breakdown</h2>
             <div className="space-y-4">
               <div>

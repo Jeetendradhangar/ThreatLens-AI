@@ -172,69 +172,111 @@ export default function HistoryPage() {
       {/* Main Table */}
       <div className="glass-card rounded-xl overflow-hidden border border-outline-variant/20">
         {filteredScans.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-surface-container-low border-b border-outline-variant/30">
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">URL / Domain</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Risk Score</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Threat Level</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Confidence</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Scan Date</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline-variant/10">
-                {filteredScans.map((scan) => (
-                  <tr
-                    key={scan.id}
-                    className="cyber-row transition-colors group"
-                  >
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        {getThreatIcon(scan.threat_level)}
-                        <span className="font-data-mono text-data-mono text-on-surface break-all max-w-xs md:max-w-md block">
-                          {scan.input_value}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
-                          <div className={`${getScoreBarColor(scan.threat_level)} h-full`} style={{ width: `${scan.risk_score}%` }}></div>
-                        </div>
-                        <span className={`font-data-mono ${getScoreColor(scan.threat_level)} font-bold`}>
-                          {scan.risk_score}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <RiskBadge threat_level={scan.threat_level} />
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="text-on-surface-variant font-data-mono text-xs">
-                        {scan.threat_level === 'Safe' ? 'Clean Result' : `${scan.confidence || 'Medium'} Confidence`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="text-on-surface-variant font-data-mono text-xs whitespace-nowrap">
-                        {scan.scanned_at ? new Date(scan.scanned_at).toLocaleString() : 'Unknown Date'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <Link
-                        to={`/report/${scan.id}`}
-                        className="inline-flex p-2 hover:bg-primary/10 rounded-full transition-colors text-primary"
-                        title="View Full Intel Report"
-                      >
-                        <span className="material-symbols-outlined">visibility</span>
-                      </Link>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-container-low border-b border-outline-variant/30">
+                    <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">URL / Domain</th>
+                    <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Risk Score</th>
+                    <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Threat Level</th>
+                    <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Confidence</th>
+                    <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider">Scan Date</th>
+                    <th className="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-wider text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/10">
+                  {filteredScans.map((scan) => (
+                    <tr
+                      key={scan.id}
+                      className="cyber-row transition-colors group"
+                    >
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          {getThreatIcon(scan.threat_level)}
+                          <span className="font-data-mono text-data-mono text-on-surface break-all max-w-xs md:max-w-md block">
+                            {scan.input_value}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                            <div className={`${getScoreBarColor(scan.threat_level)} h-full`} style={{ width: `${scan.risk_score}%` }}></div>
+                          </div>
+                          <span className={`font-data-mono ${getScoreColor(scan.threat_level)} font-bold`}>
+                            {scan.risk_score}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5">
+                        <RiskBadge threat_level={scan.threat_level} />
+                      </td>
+                      <td className="px-6 py-5">
+                        <span className="text-on-surface-variant font-data-mono text-xs">
+                          {scan.threat_level === 'Safe' ? 'Clean Result' : `${scan.confidence || 'Medium'} Confidence`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5">
+                        <span className="text-on-surface-variant font-data-mono text-xs whitespace-nowrap">
+                          {scan.scanned_at ? new Date(scan.scanned_at).toLocaleString() : 'Unknown Date'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <Link
+                          to={`/report/${scan.id}`}
+                          className="inline-flex p-2 hover:bg-primary/10 rounded-full transition-colors text-primary"
+                          title="View Full Intel Report"
+                        >
+                          <span className="material-symbols-outlined">visibility</span>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card-based View */}
+            <div className="block sm:hidden divide-y divide-outline-variant/10">
+              {filteredScans.map((scan) => (
+                <div key={scan.id} className="p-4 space-y-3 hover:bg-primary/5 active:bg-primary/10 transition-colors">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="flex items-center gap-2">
+                      {getThreatIcon(scan.threat_level)}
+                      <span className="font-data-mono text-xs text-on-surface break-all max-w-[180px] block">
+                        {scan.input_value}
+                      </span>
+                    </div>
+                    <RiskBadge threat_level={scan.threat_level} />
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-on-surface-variant">Risk:</span>
+                      <span className={`font-data-mono font-bold ${getScoreColor(scan.threat_level)}`}>
+                        {scan.risk_score}
+                      </span>
+                    </div>
+                    <span className="text-on-surface-variant font-data-mono text-[10px]">
+                      {scan.scanned_at ? new Date(scan.scanned_at).toLocaleDateString() : 'Unknown'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="text-[10px] text-on-surface-variant font-data-mono">
+                      {scan.threat_level === 'Safe' ? 'Clean Result' : `${scan.confidence || 'Medium'} Confidence`}
+                    </span>
+                    <Link
+                      to={`/report/${scan.id}`}
+                      className="text-primary hover:underline font-label-caps text-[10px] uppercase flex items-center gap-1 font-bold animate-pulse"
+                    >
+                      View Report <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="p-12 text-center text-on-surface-variant/60 text-sm italic">
             No scans match the active search filters.
