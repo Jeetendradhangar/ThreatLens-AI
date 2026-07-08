@@ -3,10 +3,11 @@
 ThreatLens AI is a web application designed to help users safely audit URLs, domains, and IP addresses for security threats. It was developed as a team project submission for the ATH Hackathon 0.1.
 
 ## Deployed Application
-The live application is hosted at: https://threat-lens-ai-zeta.vercel.app/scan
+The live application is hosted at: https://threat-lens-ai-zeta.vercel.app
 
 ## Project Creators
 This project was built by:
+* Jeetendra Dhangar
 * Rajkumar
 * Vishal Baghel
 
